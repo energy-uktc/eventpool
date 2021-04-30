@@ -13,7 +13,7 @@ const EventItem = (props) => {
       </View>
       <View style={styles.details}>
         <Text style={styles.text}>{props.title}</Text>
-        <Text>{props.startDate.toLocaleDateString()}</Text>
+        <Text style={styles.text}>{props.startDate.toLocaleDateString()}</Text>
       </View>
     </View>
   );
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     paddingLeft: 5
   },
   text: {
-    fontFamily: 'lucida grande'
+    fontFamily: 'georgia'
   }
 });
 export default EventItem;

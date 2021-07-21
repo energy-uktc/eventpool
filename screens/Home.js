@@ -10,7 +10,7 @@ import EventItem from "../components/EventItem";
 
 import EVENTS from '../data/events'
 
-const Events = (props) => {
+const Home = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -33,4 +33,4 @@ const styles = StyleSheet.create({
   },
   list: {},
 });
-export default Events;
+export default Home;

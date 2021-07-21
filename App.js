@@ -1,7 +1,7 @@
-import { Provider } from "react-redux";
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Button } from "react-native";
-import Events from "./screens/Events";
+import { Provider, useSelector, useDispatch } from "react-redux";
+import React, { useState, useEffect, useCallback } from "react";
+import { Alert } from 'react-native'
+import NavigationContainer from "./NavigationContainer";
 import AppLoading from 'expo-app-loading';
 import * as Font from "expo-font";
 import store from "./store/store";
@@ -30,18 +30,8 @@ export default function App() {
   }
   return (
     <Provider store={store}>
-      <View style={styles.container}>
-        <Events />
-      </View>
+      <NavigationContainer />
     </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

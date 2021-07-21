@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,
-    borderColor: colors.borderColor,
+    borderColor: colors.blueish,
     padding: 5,
   },
   icon: {
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     backgroundColor: "#ccc",
     //borderRadius
-    borderColor: colors.borderColor,
+    borderColor: colors.blueish,
     // backgroundColor: 
   },
   details: {

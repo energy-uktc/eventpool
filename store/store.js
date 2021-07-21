@@ -1,13 +1,12 @@
 import ReduxThunk from "redux-thunk";
 import { createStore, combineReducers, applyMiddleware } from "redux";
+import authReducer from './reducers/auth'
 import { composeWithDevTools } from "redux-devtools-extension";
 
 const middleware = [ReduxThunk];
 
 const rootReducer = combineReducers({
-  // auth: authReducer,
-  // quiz: quizReducer,
-  // loading: loadingReducer,
+  auth: authReducer,
 });
 
 export default store = createStore(

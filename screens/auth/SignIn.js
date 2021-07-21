@@ -19,7 +19,6 @@ import { FORM_UPDATE, formReducer } from '../../service/formReducer'
 
 const SignIn = props => {
   const dispatch = useDispatch();
-  const [isSignup, setIsSignup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
@@ -57,25 +56,25 @@ const SignIn = props => {
     try {
       setIsLoading(true);
       await dispatch(
-        authActions.login(
-          formState.inputValues.email,
-          formState.inputValues.password
-        )
+        authActions.login({
+          email: formState.inputValues.email,
+          password: formState.inputValues.password
+        })
       );
     } catch (err) {
       setIsLoading(false);
-      Alert.alert(`Error login"}`, `${err}`, [
+      Alert.alert(`Error login`, `${err}`, [
         { text: "OK" }
       ]);
     }
-  }, [dispatch, isSignup, formState]);
+  }, [dispatch, formState]);
   let passwordInput = null;
 
   return (
 
     <LinearGradient
       style={styles.screen}
-      colors={[colors.backColor, colors.backColor, colors.backColor]}
+      colors={[colors.white, colors.mint, colors.spearmint]}
     >
       <KeyboardAvoidingView
         style={styles.container}
@@ -113,26 +112,23 @@ const SignIn = props => {
               minLength={5}
             />
             <View style={styles.buttonContainer}>
-              {isLoading ? (
-                <LoadingControl />
-              ) : (
-                  <Button
-                    title="Login"
-                    color={colors.primary}
-                    onPress={authHandler}
-                  />
-                )}
+              <Button
+                title="Login"
+                color={colors.blueish}
+                onPress={authHandler}
+              />
             </View>
             <View style={styles.buttonContainer}>
               <Button
                 title="Switch to Sign Up"
-                color={colors.accent}
+                color={colors.green}
                 onPress={() => {
-                  setIsSignup(prevState => !prevState);
+                  console.log("sign up")
                 }}
               />
             </View>
           </ScrollView>
+          <LoadingControl active={isLoading} />
         </Card>
       </KeyboardAvoidingView>
     </LinearGradient>
@@ -140,13 +136,14 @@ const SignIn = props => {
   );
 };
 
-AuthScreen.navigationOptions = {
-  headerTitle: "Sign In"
-};
+// AuthScreen.navigationOptions = {
+//   headerTitle: "Sign In"
+// };
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1
+    flex: 1,
+    backgroundColor: colors.mint
   },
   container: {
     width: "100%",

@@ -38,7 +38,7 @@ const isValidURL = (str) => {
     "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
     "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
     "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-      "(\\#[-a-z\\d_]*)?$",
+    "(\\#[-a-z\\d_]*)?$",
     "i"
   ); // fragment locator
   return !!pattern.test(str);
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   label: {
-    fontFamily: "open-sans-bold",
+    fontFamily: "georgia-bold",
     marginVertical: 8,
   },
   input: {
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   validationText: {
-    fontFamily: "open-sans",
+    fontFamily: "georgia",
     fontSize: 10,
     fontStyle: "italic",
     color: "red",

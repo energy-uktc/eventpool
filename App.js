@@ -1,6 +1,5 @@
-import { Provider, useSelector, useDispatch } from "react-redux";
-import React, { useState, useEffect, useCallback } from "react";
-import { Alert } from 'react-native'
+import { Provider } from "react-redux";
+import React, { useState } from "react";
 import NavigationContainer from "./NavigationContainer";
 import AppLoading from 'expo-app-loading';
 import * as Font from "expo-font";

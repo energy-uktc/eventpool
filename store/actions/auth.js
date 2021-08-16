@@ -14,13 +14,6 @@ const storeAuthentication = (authData) => {
   };
 };
 
-export const signup = (userData) => {
-  return async (dispatch) => {
-    const jti = await authService.signUp(userData);
-    dispatch(storeAuthentication(userId));
-  };
-};
-
 export const login = (userData) => {
   return async (dispatch) => {
     const authData = await authService.login(userData);

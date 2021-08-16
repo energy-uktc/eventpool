@@ -11,6 +11,9 @@ const fetchFonts = () => {
     "georgia-italic": require("./assets/fonts/georgia-italic.ttf"),
     "georgia-bold": require("./assets/fonts/georgia-bold.ttf"),
     "georgia-bold-italic": require("./assets/fonts/georgia-bold-italic.ttf"),
+    // "montserrat-bold": require("./assets/fonts/Montserrat-Bold.ttf"),
+    // "roboto-bold": require('./assets/fonts/Roboto-Bold.ttf'),
+    // "playfair-bold": require('./assets/fonts/PlayfairDisplay-Bold.ttf')
   });
 };
 

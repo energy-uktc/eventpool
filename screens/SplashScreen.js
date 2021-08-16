@@ -44,8 +44,10 @@ export default SplashScreen = (props) => {
       });
 
       axios.interceptors.response.use(response => {
+        //console.error("HI");
         return response;
       }, error => {
+        console.error(error);
         const status = error.response && error.response.status;
         if (status === 401) {
           handleAuthError(error.response);
@@ -54,7 +56,10 @@ export default SplashScreen = (props) => {
           console.error(error);
           return Promise.reject("Something went wrong");
         }
-        return Promise.reject(error.response.data.error)
+        if (error.response && error.response.data && error.response.data.error) {
+          return Promise.reject(error.response.data.error)
+        }
+        return Promise.reject("Something went wrong")
       })
     }
     setupAxios();

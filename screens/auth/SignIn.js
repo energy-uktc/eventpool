@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useReducer } from "react";
+import React, { useState, useCallback, useReducer, useEffect } from "react";
 import {
   ScrollView,
   View,
@@ -19,6 +19,12 @@ import { FORM_UPDATE, formReducer } from '../../service/formReducer'
 
 const SignIn = props => {
   const dispatch = useDispatch();
+  useEffect(() => {
+    console.log("Init")
+    return () => {
+      console.log("Remove")
+    }
+  }, [])
   const [isLoading, setIsLoading] = useState(false);
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
@@ -102,7 +108,8 @@ const SignIn = props => {
                 passwordInput = ref;
               }}
               onSubmitEditing={() => { }}
-              secureTextEntry={true}
+              secure={true}
+              allowView={true}
               autoCapitalize="none"
               autoCorrect={false}
               validationText="Please enter valid password"
@@ -113,6 +120,7 @@ const SignIn = props => {
             />
             <View style={styles.buttonContainer}>
               <Button
+                disabled={!formState.formIsValid}
                 title="Login"
                 color={colors.blueish}
                 onPress={authHandler}
@@ -123,7 +131,7 @@ const SignIn = props => {
                 title="Switch to Sign Up"
                 color={colors.green}
                 onPress={() => {
-                  console.log("sign up")
+                  props.navigation.replace('SignUp')
                 }}
               />
             </View>

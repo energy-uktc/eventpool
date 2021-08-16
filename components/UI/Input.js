@@ -1,5 +1,8 @@
-import React, { useReducer, useEffect, useRef } from "react";
-import { View, TextInput, Text, StyleSheet } from "react-native";
+import React, { useReducer, useEffect, useState, useRef } from "react";
+import { View, TextInput, StyleSheet } from "react-native";
+import Text from './Text'
+import { Ionicons } from '@expo/vector-icons';
+import colors from "../../constants/colors";
 
 const INPUT_CHANGE = "INPUT_CHANGE";
 const INPUT_BLUR = "INPUT_BLUR";
@@ -53,6 +56,7 @@ const Input = (props) => {
     isValid: !!props.initiallyValid,
     touched: false,
   });
+  const [secure, setSecure] = useState(props.secure);
 
   useEffect(() => {
     if (!props.getRef) {
@@ -134,25 +138,31 @@ const Input = (props) => {
         }}
       >
         <Text
+          type="label"
           style={{
-            ...styles.label,
             marginVertical: props.positionHorizontal ? 0 : 5,
             marginRight: props.positionHorizontal ? 8 : 0,
           }}
         >
           {props.label}
         </Text>
-        <TextInput
-          {...props}
-          style={styles.input}
-          value={state.value}
-          onChangeText={textChangeHandler}
-          onBlur={lostFocusHandler}
-          ref={props.childRef}
-        />
+        <View style={styles.inputSection}>
+          <TextInput
+            {...props}
+            secureTextEntry={secure}
+            style={styles.input}
+            value={state.value}
+            onChangeText={textChangeHandler}
+            onBlur={lostFocusHandler}
+            ref={props.childRef}
+          />
+          {props.secure && props.allowView &&
+            <Ionicons style={styles.inputIcon} name={secure ? "eye" : "eye-off"} size={20} color={colors.green} onPress={() => setSecure(!secure)} />
+          }
+        </View>
       </View>
       {!state.isValid && state.touched && (
-        <Text style={styles.validationText}>{props.validationText}</Text>
+        <Text type="inputValidation">{props.validationText}</Text>
       )}
     </View>
   );
@@ -162,21 +172,24 @@ const styles = StyleSheet.create({
   inputControl: {
     width: "100%",
   },
-  label: {
-    fontFamily: "georgia-bold",
-    marginVertical: 8,
-  },
   input: {
+    flex: 1,
+    color: colors.text,
+    fontFamily: "georgia",
     paddingHorizontal: 2,
     paddingVertical: 5,
+  },
+  inputSection: {
+    overflow: "hidden",
+    width: "100%",
+    flexDirection: 'row',
+    justifyContent: "space-between",
     borderBottomColor: "#ccc",
     borderBottomWidth: 1,
   },
-  validationText: {
-    fontFamily: "georgia",
-    fontSize: 10,
-    fontStyle: "italic",
-    color: "red",
+  inputIcon: {
+    padding: 10,
+    backgroundColor: colors.white,
   },
 });
 

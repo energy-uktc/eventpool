@@ -27,6 +27,29 @@ export const isTokenAboutToExpire = async () => {
   return false;
 };
 
+export const register = async userData => {
+  const response = await axios.post(AUTH_URL + "/register", {
+    userName: userData.name,
+    email: userData.email,
+    password: userData.password
+  }, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
+export const resendVerificationEmail = async userData => {
+  const response = await axios.post(AUTH_URL + "/resendVerificationCode", {
+    email: userData.email,
+    password: userData.password
+  }, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
 export const login = async userData => {
   const response = await axios.post(AUTH_URL + "/token", {
     email: userData.email,

@@ -6,7 +6,6 @@ const USER_URL = API_URL + "/api/v1/user";
 
 export const getUser = async () => {
     const response = await axios.get(USER_URL);
-    console.log("getUser");
     return {
         email: response.data.email,
         name: response.data.userNamed,

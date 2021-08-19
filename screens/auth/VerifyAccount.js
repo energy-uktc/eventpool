@@ -8,14 +8,9 @@ import LoadingControl from "../../components/UI/LoadingControl";
 import * as Linking from "expo-linking";
 
 const VerifyAccount = (props) => {
-    console.log(props);
     const { email, password } = props.route.params;
     const verified = props.route.params.verified === "true";
     const verifying = !(props.route.params.verified === undefined);
-    console.log(`Verified: ${verified}`);
-    console.log(`Verifying: ${verifying}`);
-    console.log(`Email: ${email}`);
-    console.log(`Password: ${password}`);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -34,8 +29,7 @@ const VerifyAccount = (props) => {
         }
         setIsLoading(false);
     }, [email, password]);
-    console.log(`Verified: ${verified}`);
-    console.log(`TEST: ` + verified ? "yes" : "no");
+
     return (
         <LinearGradient style={styles.screen} colors={[colors.mint, colors.white, colors.white]}>
             <View>

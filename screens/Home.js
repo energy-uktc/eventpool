@@ -1,8 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { SafeAreaView, StatusBar, StyleSheet, FlatList, Button } from "react-native";
+import { SafeAreaView, StatusBar, StyleSheet, FlatList } from "react-native";
 import EventItem from "../components/EventItem";
-import * as authActions from "../store/actions/auth";
 
 import EVENTS from "../data/events";
 

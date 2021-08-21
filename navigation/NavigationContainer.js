@@ -10,6 +10,7 @@ import { getUser } from "../store/actions/user";
 import * as Linking from "expo-linking";
 import MainDrawerNavigator from "./MainDrawerNavigator";
 import AuthStackNavigator from "./AuthStackNavigator";
+
 import NetInfo from "@react-native-community/netinfo";
 
 enableScreens();
@@ -66,7 +67,12 @@ const NavContainer = (props) => {
 
   const config = {
     screens: {
-      VerifyAccount: "verifyAccount",
+      Authentication: {
+        screens: {
+          VerifyAccount: "verifyAccount",
+          ResetPassword: "resetPassword",
+        },
+      },
     },
   };
 

@@ -51,6 +51,7 @@ export default SplashScreen = (props) => {
         },
         (error) => {
           const status = error.response && error.response.status;
+
           if (status === 401) {
             handleAuthError(error.response);
             return Promise.reject("");

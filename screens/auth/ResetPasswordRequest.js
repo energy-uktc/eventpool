@@ -2,32 +2,28 @@ import React, { useState, useCallback, useReducer } from "react";
 import { ScrollView, View, KeyboardAvoidingView, StyleSheet, Button, Alert, Platform } from "react-native";
 import Card from "../../components/UI/Card";
 import Input from "../../components/UI/Input";
-import Touchable from "../../components/UI/Touchable";
 import Text from "../../components/UI/Text";
-
-import { LinearGradient } from "expo-linear-gradient";
-import { useDispatch } from "react-redux";
-import * as authActions from "../../store/actions/auth";
+import * as authService from "../../service/authService";
 import LoadingControl from "../../components/UI/LoadingControl";
 import colors from "../../constants/colors";
 import { FORM_UPDATE, formReducer } from "../../service/formReducer";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Linking from "expo-linking";
 
-const SignIn = (props) => {
-  const dispatch = useDispatch();
+const ResetPassword = (props) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
       email: "",
-      password: "",
     },
     inputValidities: {
       email: false,
-      password: false,
     },
     formIsValid: false,
   });
 
-  const inputChangeHandler = useCallback(
+  const inputHandler = useCallback(
     (inputIdentifier, inputValue, inputIsValid) => {
       dispatchFormState({
         type: FORM_UPDATE,
@@ -39,92 +35,77 @@ const SignIn = (props) => {
     [dispatchFormState]
   );
 
-  const authHandler = useCallback(async () => {
+  const sendResetPasswordEmail = useCallback(async () => {
     if (!formState.formIsValid) {
       Alert.alert("Validation Error", "Please enter valid authentication information!", [{ text: "OK" }]);
       return;
     }
     try {
-      setIsLoading(true);
-      await dispatch(
-        authActions.login({
-          email: formState.inputValues.email,
-          password: formState.inputValues.password,
-        })
-      );
-    } catch (err) {
-      setIsLoading(false);
-      if (err) {
-        if (err === "User is not verified") {
-          props.navigation.replace("VerifyAccount", {
-            email: formState.inputValues.email,
-            password: formState.inputValues.password,
-          });
-        } else {
-          Alert.alert(`Error login`, `${err}`, [{ text: "OK" }]);
-        }
-      }
-    }
-  }, [dispatch, formState]);
-  let passwordInput = null;
+      await authService.sendResetPasswordEmail(formState.inputValues.email, Linking.createURL("/resetPassword"));
+      setEmailSent(true);
+    } catch (err) {}
+    setIsLoading(false);
+  }, [formState]);
 
   return (
     <LinearGradient style={styles.screen} colors={[colors.white, colors.mint, colors.spearmint]}>
       <KeyboardAvoidingView style={styles.container} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={50}>
+        <View style={styles.textContentView}>
+          {!emailSent ? (
+            <>
+              <Text style={styles.text} type="header">
+                We will send you an email with a password reset link.
+              </Text>
+              <Text />
+              <Text style={styles.text} type="header">
+                Please enter your email.
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.text} type="header">
+                Verification link was successfully sent to your email.
+              </Text>
+              <Text style={styles.text} type="header">
+                Follow the link on your mobile device in order to reset your password.
+              </Text>
+              <Text />
+              <Text style={styles.text} type="header">
+                If you have not received the mail please wait a couple of minutes and check your Spam or Junk folder or try resending
+              </Text>
+            </>
+          )}
+        </View>
         <Card style={styles.authContainer}>
           <ScrollView>
             <Input
               id="email"
-              onSubmitEditing={() => {
-                passwordInput.focus();
-              }}
               autoCapitalize="none"
               autoCorrect={false}
               validationText="Please enter valid email"
               label="E-Mail"
-              onInputChange={inputChangeHandler}
+              onInputChange={inputHandler}
               required={true}
               email
             />
-            <Input
-              id="password"
-              childRef={(ref) => {
-                passwordInput = ref;
-              }}
-              onSubmitEditing={() => {}}
-              secure={true}
-              allowView={true}
-              autoCapitalize="none"
-              autoCorrect={false}
-              validationText="Please enter valid password"
-              label="Password"
-              onInputChange={inputChangeHandler}
-              required={true}
-              minLength={5}
-            />
+
             <View style={styles.buttonContainer}>
-              <Button disabled={!formState.formIsValid} title="Login" color={colors.blueish} onPress={authHandler} />
+              <Button
+                disabled={!formState.formIsValid}
+                title={emailSent ? "Resend" : "Send"}
+                color={colors.blueish}
+                onPress={sendResetPasswordEmail}
+              />
             </View>
             <View style={styles.buttonContainer}>
               <Button
-                title="Switch to Sign Up"
+                title="Cancel"
                 color={colors.green}
                 onPress={() => {
-                  props.navigation.replace("SignUp");
+                  props.navigation.goBack();
                 }}
               />
             </View>
-            <Touchable
-              onPress={() => {
-                props.navigation.navigate("ResetPasswordRequest");
-              }}
-            >
-              <View style={styles.buttonContainer}>
-                <Text type="label" style={{ textAlign: "center", textDecorationLine: "underline" }}>
-                  Forgot your password
-                </Text>
-              </View>
-            </Touchable>
           </ScrollView>
           <LoadingControl active={isLoading} />
         </Card>
@@ -137,6 +118,14 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.mint,
+  },
+  textContentView: {
+    paddingHorizontal: 10,
+    paddingVertical: 30,
+    alignItems: "center",
+  },
+  text: {
+    textAlign: "center",
   },
   container: {
     width: "100%",
@@ -154,4 +143,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignIn;
+export default ResetPassword;

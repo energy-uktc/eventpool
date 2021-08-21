@@ -2,32 +2,36 @@ import { AUTHENTICATE, GET_AUTH_DATA, LOGOUT, RESTORE_TOKEN } from "../actions/a
 
 const initialState = {
   loading: true,
-  authenticated: "",
-  scopes: ""
+  authenticated: false,
+  scopes: "",
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case LOGOUT:
-      return initialState;
+      return {
+        ...state,
+        authenticated: false,
+        scopes: "",
+      };
     case RESTORE_TOKEN:
       return {
         ...state,
-        scopes: action.scopes
+        scopes: action.scopes,
       };
     case AUTHENTICATE:
       return {
         ...state,
         authenticated: true,
-        scopes: action.scopes
+        scopes: action.scopes,
       };
     case GET_AUTH_DATA:
       return {
         ...state,
         scopes: action.scopes,
         loading: false,
-        authenticated: action.authenticated
-      }
+        authenticated: action.authenticated,
+      };
     default:
       return state;
   }

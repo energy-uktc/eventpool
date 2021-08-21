@@ -1,15 +1,15 @@
 import React from "react";
 import { View, StyleSheet, Dimensions, Alert } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as authActions from "../store/actions/auth";
 import Text from "../components/UI/Text";
 import Touchable from "../components/UI/Touchable";
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../constants/colors";
+import user from "../store/reducers/user";
 const MainDrawerContent = (props) => {
   const dispatch = useDispatch();
-
   return (
     <DrawerContentScrollView contentContainerStyle={styles.drawerContainer} {...props}>
       <Header {...props} />
@@ -42,20 +42,22 @@ const MainDrawerContent = (props) => {
 };
 
 const Header = (props) => {
+  const user = useSelector((state) => state.user);
+
   return (
     <Touchable
       activeOpacity={0.7}
       onPress={() => {
-        props.navigation.jumpTo("Profile");
+        props.navigation.jumpTo("ProfileNavigator");
       }}
     >
       <View style={styles.header}>
         <View>
           <Text type="label" style={styles.headerText}>
-            Mario Stoilov
+            {user.name}
           </Text>
           <Text type="text" style={styles.headerText}>
-            energy.uktc@gmail.com
+            {user.email}
           </Text>
         </View>
 

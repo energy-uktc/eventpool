@@ -2,6 +2,7 @@ import React from "react";
 import { Dimensions } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Home from "../screens/Home";
+import ProfileNavigator from "./ProfileNavigator";
 import colors from "../constants/colors";
 import MainDrawerContent from "./MainDrawerContent";
 import { Ionicons } from "@expo/vector-icons";
@@ -38,9 +39,14 @@ const MainDrawerNavigator = (props) => {
       }}
     >
       <Drawer.Screen name="Home" component={Home} options={{ drawerIcon: (props) => <Ionicons name="home" {...props} /> }} />
-      <Drawer.Screen name="Profile" component={Home} options={{ drawerIcon: (props) => <Ionicons name="person" {...props} /> }} />
+      <Drawer.Screen
+        name="ProfileNavigator"
+        component={ProfileNavigator}
+        options={{ drawerIcon: (props) => <Ionicons name="person" {...props} />, title: "Profile", headerShown: false, swipeEnabled: false }}
+      />
       <Drawer.Screen name="Settings" component={Home} options={{ drawerIcon: (props) => <Ionicons name="settings" {...props} /> }} />
     </Drawer.Navigator>
   );
 };
+
 export default MainDrawerNavigator;

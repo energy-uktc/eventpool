@@ -149,6 +149,7 @@ const Input = (props) => {
           }}
         >
           {props.label}
+          {props.label.slice(-1) === ":" ? "" : ":"}
         </Text>
         <View style={styles.inputSection}>
           <TextInput

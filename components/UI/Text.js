@@ -4,7 +4,11 @@ import colors from "../../constants/colors";
 
 const CustomText = (props) => {
   const style = props.type ? (styles[props.type] ? styles[props.type] : styles.text) : styles.text;
-  return <Text style={{ ...style, ...props.style }}>{props.children}</Text>;
+  return (
+    <Text {...props} style={{ ...style, ...props.style }}>
+      {props.children}
+    </Text>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -18,7 +22,7 @@ const styles = StyleSheet.create({
     //marginVertical: 5,
     color: colors.green,
     fontFamily: "georgia-bold",
-    fontSize: 14,
+    fontSize: 15,
   },
   inputValidation: {
     fontFamily: "georgia-italic",
@@ -28,7 +32,7 @@ const styles = StyleSheet.create({
   text: {
     color: colors.text,
     fontFamily: "georgia",
-    fontSize: 14,
+    fontSize: 16,
   },
 });
 

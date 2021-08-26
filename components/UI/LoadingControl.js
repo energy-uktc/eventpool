@@ -2,9 +2,12 @@ import React from "react";
 import { View, ActivityIndicator, StyleSheet, Text } from "react-native";
 import Color from "../../constants/colors";
 
-const LoadingControl = props => {
+const LoadingControl = (props) => {
   return (
-    <View style={{ ...styles.centered, ...props.style, backgroundColor: props.active ? "#F5FCFF88" : undefined }} pointerEvents={props.active ? 'auto' : 'none'}>
+    <View
+      style={{ ...styles.centered, ...props.style, backgroundColor: props.active ? "#F5FCFF88" : undefined }}
+      pointerEvents={props.active ? "auto" : "none"}
+    >
       <ActivityIndicator size="large" color={Color.blueish} animating={props.active} />
     </View>
   );
@@ -12,7 +15,7 @@ const LoadingControl = props => {
 
 const styles = StyleSheet.create({
   centered: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     top: 0,
@@ -20,7 +23,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
-  }
+  },
 });
 
 export default LoadingControl;

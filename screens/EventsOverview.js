@@ -20,9 +20,10 @@ const EventsOverview = (props) => {
 
   const handleSelectEvent = useCallback(
     (eventId) => {
+      dispatch(eventActions.clearCurrentEvent());
       props.navigation.navigate("EventDetails", { eventId: eventId });
     },
-    [props.navigation]
+    [props.navigation, dispatch]
   );
 
   const getEvents = useCallback(

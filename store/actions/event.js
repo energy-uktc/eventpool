@@ -4,6 +4,7 @@ export const GET_EVENTS = "GET_EVENTS";
 export const GET_ACTIVE_EVENTS = "GET_ACTIVE_EVENTS";
 export const GET_CURRENT_EVENT = "GET_CURRENT_EVENT";
 export const UPDATE_EVENT = "UPDATE_EVENT";
+export const CLEAR_CURRENT = "CLEAR_CURRENT";
 
 export const getEvents = () => {
   return async (dispatch) => {
@@ -30,6 +31,12 @@ export const getActiveEvents = () => {
       type: GET_ACTIVE_EVENTS,
       events: eventsObj,
     });
+  };
+};
+
+export const clearCurrentEvent = () => {
+  return {
+    type: CLEAR_CURRENT,
   };
 };
 

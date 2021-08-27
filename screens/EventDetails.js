@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useReducer } from "react";
+import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from "react";
 import { StyleSheet, ScrollView, View, Dimensions, Button } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Text from "../components/UI/Text";
@@ -7,99 +7,39 @@ import LoadingControl from "../components/UI/LoadingControl";
 import CardField from "../components/UI/CardField";
 import ErrorView from "../components/ErrorView";
 import * as eventActions from "../store/actions/event";
+import * as activityService from "../service/activityService";
+import { clearCurrentActivity } from "../store/actions/activity";
 import { useDispatch, useSelector } from "react-redux";
 import colors from "../constants/colors";
 import * as formatter from "../utils/formatter";
-import DateTimePicker from "@react-native-community/datetimepicker";
-
-const SHOW_DATE_PICKER = "SHOW_PICKER";
-const HANDLE_VALUE = "HANDLE_VALUE";
-const HANDLE_CANCEL = "HANDLE_CANCEL";
-
-const dateReducer = (state, action) => {
-  switch (action.type) {
-    case SHOW_DATE_PICKER:
-      return {
-        ...state,
-        show: true,
-        mode: "date",
-        value: action.date || state.value,
-        minimumDate: action.minimumDate,
-        maximumDate: action.maximumDate,
-        fieldId: action.fieldId,
-      };
-    case HANDLE_VALUE:
-      if (state.mode === "date") {
-        return {
-          ...state,
-          mode: "time",
-          value: action.date || state.value,
-        };
-      } else {
-        return {
-          show: false,
-          mode: "date",
-          value: new Date(),
-          fieldId: "",
-          minimumDate: new Date(),
-          maximumDate: null,
-        };
-      }
-    case HANDLE_CANCEL:
-      return {
-        show: false,
-        mode: "date",
-        value: new Date(),
-        fieldId: "",
-        minimumDate: new Date(),
-        maximumDate: null,
-      };
-    default:
-      return state;
-  }
-};
+import DateTimePicker from "../components/UI/DateTimePicker";
+import { Ionicons } from "@expo/vector-icons";
+import ActivityListItem from "../components/ActivityListItem";
 
 const EventDetails = (props) => {
   const dispatch = useDispatch();
+  const datePickerRef = useRef(null);
 
   const event = useSelector((state) => state.event.currentEvent);
   const [loading, setLoading] = useState(true);
+  const [solidLoading, setSolidLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState({ line1: "", line2: "" });
-  const [dateState, dispatchDateState] = useReducer(dateReducer, {
-    show: false,
-    mode: "date",
-    value: new Date(),
-    fieldId: "",
-    minimumDate: new Date(),
-    maximumDate: null,
-  });
-  const onChangeDate = (e, selectedDate) => {
-    if (selectedDate === undefined) {
-      dispatchDateState({
-        type: HANDLE_CANCEL,
-      });
-      return;
-    }
-    const newDate = selectedDate || dateState.value;
-    dispatchDateState({
-      type: HANDLE_VALUE,
-      date: newDate,
-    });
-    if (dateState.mode === "time") {
-      if (dateState.fieldId === "endDate") {
-        if (newDate.getTime() < Date.parse(event.startDate)) {
-          setErrorMessage({ line1: "Error updating the event", line2: "Event ending time can not be before the starting time." });
-          return;
-        }
-      } else {
-        if (event.endDate && newDate.getTime() > Date.parse(event.endDate)) {
-          setErrorMessage({ line1: "Event can not be updated", line2: "Event ending time can not be before the starting time." });
-          return;
-        }
+
+  const onChangeDate = (fieldId, selectedDate) => {
+    if (fieldId === "endDate") {
+      if (selectedDate.getTime() < Date.parse(event.startDate)) {
+        setErrorMessage({ line1: "Error updating the event", line2: "Event ending time can not be before the starting time." });
+        return;
       }
-      updateEventField(dateState.fieldId, selectedDate || dateState.value);
+    } else {
+      if (event.endDate && selectedDate.getTime() > Date.parse(event.endDate)) {
+        setErrorMessage({ line1: "Event can not be updated", line2: "Event ending time can not be before the starting time." });
+        return;
+      }
     }
+    updateEventField(fieldId, selectedDate);
   };
+
   const getEventDetails = useCallback(
     async (eventId) => {
       try {
@@ -111,6 +51,24 @@ const EventDetails = (props) => {
         setErrorMessage({ line1: "Event can not be loaded", line2: err });
       }
       setLoading(false);
+      setSolidLoading(false);
+    },
+    [eventActions, errorMessage]
+  );
+
+  const deleteActivity = useCallback(
+    async (eventId, activityId) => {
+      try {
+        await activityService.deleteActivity(eventId, activityId);
+        await dispatch(eventActions.getCurrentEvent(eventId));
+        if (errorMessage !== "") {
+          setErrorMessage({ line1: "", line2: "" });
+        }
+      } catch (err) {
+        setErrorMessage({ line1: "Event can not be loaded", line2: err });
+      }
+      setLoading(false);
+      setSolidLoading(false);
     },
     [eventActions, errorMessage]
   );
@@ -152,7 +110,25 @@ const EventDetails = (props) => {
   );
 
   useEffect(() => {
+    setSolidLoading(true);
     getEventDetails(props.route.params.eventId);
+  }, []);
+
+  useLayoutEffect(() => {
+    props.navigation.setOptions({
+      headerRight: () => (
+        <Touchable
+          onPress={async () => {
+            setLoading(true);
+            await getEventDetails(props.route.params.eventId);
+          }}
+        >
+          <View>
+            <Ionicons color={colors.text} size={28} name="refresh" />
+          </View>
+        </Touchable>
+      ),
+    });
   }, []);
 
   useEffect(() => {
@@ -167,6 +143,20 @@ const EventDetails = (props) => {
   }, [errorMessage]);
 
   const editable = !!event && (Date.parse(event.startDate) > Date.now() || (!!event.endDate && Date.parse(event.endDate) > Date.now()));
+  let activities = [];
+  if (event.activities) {
+    activities = event.activities.sort((a, b) => {
+      const aDate = Date.parse(a.dateTime);
+      const bDate = Date.parse(b.dateTime);
+      if (aDate === bDate) {
+        return 0;
+      }
+      if (aDate > bDate) {
+        return 1;
+      }
+      return -1;
+    });
+  }
 
   return (
     <View style={styles.containerView}>
@@ -187,6 +177,7 @@ const EventDetails = (props) => {
 
             <CardField label="Title" id="title" text={event.title} editable={editable} onSave={updateEventField} autoCapitalize="sentences" />
             <CardField
+              collapsible={true}
               buttonsUp={event.description && event.description.length > 100}
               label="Description"
               id="description"
@@ -202,12 +193,11 @@ const EventDetails = (props) => {
               text={formatter.formatDate(event.startDate)}
               editable={editable}
               onEdit={() => {
-                dispatchDateState({
-                  type: SHOW_DATE_PICKER,
+                datePickerRef.current.showPicker({
+                  fieldId: "startDate",
                   date: new Date(event.startDate),
                   minimumDate: new Date(),
                   maximumDate: event.endDate ? new Date(event.endDate) : undefined,
-                  fieldId: "startDate",
                 });
               }}
             />
@@ -219,11 +209,10 @@ const EventDetails = (props) => {
                 onDelete={editable ? removeEventField : null}
                 editable={editable}
                 onEdit={() => {
-                  dispatchDateState({
-                    type: SHOW_DATE_PICKER,
+                  datePickerRef.current.showPicker({
+                    fieldId: "endDate",
                     date: new Date(event.endDate),
                     minimumDate: new Date(event.startDate),
-                    fieldId: "endDate",
                   });
                 }}
               />
@@ -231,13 +220,13 @@ const EventDetails = (props) => {
               <View style={styles.rowContainer}>
                 <View style={styles.addEndDateButton}>
                   <Button
+                    disabled={!editable}
                     title="Add End Time"
                     onPress={() => {
-                      dispatchDateState({
-                        type: SHOW_DATE_PICKER,
+                      datePickerRef.current.showPicker({
+                        fieldId: "endDate",
                         date: new Date(event.startDate),
                         minimumDate: new Date(event.startDate),
-                        fieldId: "endDate",
                       });
                     }}
                     color={colors.green}
@@ -245,18 +234,7 @@ const EventDetails = (props) => {
                 </View>
               </View>
             )}
-            {dateState.show && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={dateState.value}
-                mode={dateState.mode}
-                is24Hour={true}
-                display="default"
-                onChange={onChangeDate}
-                minimumDate={dateState.minimumDate}
-                maximumDate={dateState.maximumDate}
-              />
-            )}
+            <DateTimePicker getRef={(ref) => (datePickerRef.current = ref.current)} onDateSelected={onChangeDate} />
           </View>
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
@@ -264,28 +242,67 @@ const EventDetails = (props) => {
                 Attendees:
               </Text>
             </View>
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              {event.attendees &&
+                event.attendees.map((a) => {
+                  return (
+                    <View key={a.email} style={{ backgroundColor: colors.blueish, flex: 0, margin: 5, padding: 5, borderRadius: 10 }}>
+                      <Text style={{ color: colors.white }}>{a.userName}</Text>
+                    </View>
+                  );
+                })}
+            </View>
           </View>
-          {event.numberOfActivities > 0 && (
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Text type="header" style={styles.sectionHeaderText}>
-                  Activities:
-                </Text>
+
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text type="header" style={styles.sectionHeaderText}>
+                Activities:
+              </Text>
+            </View>
+            {activities.length > 0 ? (
+              activities.map((a) => {
+                return (
+                  <ActivityListItem
+                    key={a.id}
+                    activity={a}
+                    onSelect={() => {
+                      dispatch(clearCurrentActivity());
+                      props.navigation.navigate("ActivityDetails", { event: event, activityId: a.id });
+                    }}
+                    onDelete={(eventId, activityId) => {
+                      deleteActivity(eventId, activityId);
+                    }}
+                  />
+                );
+              })
+            ) : (
+              <Text>There is no activities in this event. If your event includes more that one activity you can manage them from here.</Text>
+            )}
+            <View style={styles.rowContainer}>
+              <View style={styles.addEndDateButton}>
+                <Button
+                  disabled={!editable}
+                  title="Add Activity"
+                  onPress={() => {
+                    alert("Add Activity");
+                  }}
+                  color={colors.green}
+                />
               </View>
             </View>
-          )}
-          {event.numberOfPolls > 0 && (
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Text type="header" style={styles.sectionHeaderText}>
-                  Polls:
-                </Text>
-              </View>
+          </View>
+
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text type="header" style={styles.sectionHeaderText}>
+                Polls:
+              </Text>
             </View>
-          )}
+          </View>
         </View>
       </ScrollView>
-      <LoadingControl active={loading} />
+      <LoadingControl active={loading} solid={solidLoading} />
     </View>
   );
 };
@@ -316,7 +333,11 @@ const styles = StyleSheet.create({
   },
   section: {
     flex: 1,
-    marginVertical: 5,
+    marginTop: 5,
+    paddingBottom: 10,
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.grey,
     // justifyContent: "center",
     // alignItems: "center",
   },
@@ -325,7 +346,7 @@ const styles = StyleSheet.create({
   },
   sectionHeaderText: {
     fontSize: 18,
-    textDecorationLine: "underline",
+    // textDecorationLine: "underline",
   },
   rowContainer: {
     alignItems: "center",

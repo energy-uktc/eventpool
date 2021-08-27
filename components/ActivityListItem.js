@@ -3,53 +3,56 @@ import colors from "../constants/colors";
 import Text from "./UI/Text";
 import Card from "./UI/Card";
 import Touchable from "./UI/Touchable";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as formatter from "../utils/formatter";
 
-const EventListItem = ({ event, onSelect }) => {
+const ActivityListItem = ({ activity, onSelect, onDelete }) => {
   return (
     <Card style={styles.container}>
-      <Touchable onPress={() => onSelect(event.id)}>
+      <Touchable onPress={() => onSelect(activity.id)}>
         <View style={styles.content}>
           <Text style={styles.title} type="header">
-            {event.title}
+            {activity.title}
           </Text>
           <Text type="text" numberOfLines={3} style={styles.description}>
-            {event.description}
+            {activity.description}
           </Text>
           <View style={styles.details}>
             <View style={styles.infoDetails}>
               <View style={styles.labelWithText}>
-                <Text type="label">Start Time: </Text>
-                <Text>{formatter.formatDate(event.startDate)}</Text>
+                <Text type="label">Time: </Text>
+                <Text>{formatter.formatDate(activity.dateTime)}</Text>
               </View>
-              {event.endDate && (
-                <View style={styles.labelWithText}>
-                  <Text type="label">End Time: </Text>
-                  <Text>{formatter.formatDate(event.endDate)}</Text>
-                </View>
-              )}
-              <View style={styles.labelWithText}>
-                <Text type="label">Attendees: </Text>
-                <Text>{formatter.formatAttendeesText(event.numberOfAttendees)}</Text>
-              </View>
-
-              {event.numberOfActivities > 0 && (
-                <View style={styles.labelWithText}>
-                  <Text type="label">Activities: </Text>
-                  <Text>{formatter.formatActivitiesText(event.numberOfActivities)}</Text>
-                </View>
-              )}
             </View>
             <View style={styles.buttons}>
-              {event.location && (
+              {activity.location && (
                 <Touchable onPress={() => alert("HIII")}>
                   <View style={styles.button}>
                     <Ionicons name="location" size={24} color={colors.green} />
                   </View>
                 </Touchable>
               )}
+              <Touchable
+                onPress={() =>
+                  Alert.alert(
+                    "Are you sure you want to delete this activity?",
+                    "",
+                    [
+                      {
+                        text: "Cancel",
+                        style: "cancel",
+                      },
+                      { text: "OK", onPress: () => onDelete(activity.eventId, activity.id) },
+                    ],
+                    { cancelable: true }
+                  )
+                }
+              >
+                <View style={styles.button}>
+                  <Ionicons name="trash" size={24} color={colors.error} />
+                </View>
+              </Touchable>
             </View>
           </View>
         </View>
@@ -101,4 +104,4 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 });
-export default EventListItem;
+export default ActivityListItem;

@@ -5,6 +5,7 @@ import Text from "../components/UI/Text";
 import colors from "../constants/colors";
 import EventsOverview from "../screens/EventsOverview";
 import EventDetails from "../screens/EventDetails";
+import ActivityDetails from "../screens/ActivityDetails";
 import Touchable from "../components/UI/Touchable";
 import { Ionicons } from "@expo/vector-icons";
 const Stack = createNativeStackNavigator();
@@ -49,6 +50,7 @@ const EventNavigator = (props) => {
         }}
       />
       <Stack.Screen name="EventDetails" component={EventDetails} options={{ title: "Event Details" }} />
+      <Stack.Screen name="ActivityDetails" component={ActivityDetails} options={{ title: "Activity Details" }} />
     </Stack.Navigator>
   );
 };

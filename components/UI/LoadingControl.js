@@ -1,14 +1,15 @@
 import React from "react";
 import { View, ActivityIndicator, StyleSheet, Text } from "react-native";
-import Color from "../../constants/colors";
+import colors from "../../constants/colors";
 
 const LoadingControl = (props) => {
+  const background = props.solid ? colors.mint : "#F5FCFF88";
   return (
     <View
-      style={{ ...styles.centered, ...props.style, backgroundColor: props.active ? "#F5FCFF88" : undefined }}
+      style={{ ...styles.centered, ...props.style, backgroundColor: props.active ? background : undefined }}
       pointerEvents={props.active ? "auto" : "none"}
     >
-      <ActivityIndicator size="large" color={Color.blueish} animating={props.active} />
+      <ActivityIndicator size="large" color={colors.blueish} animating={props.active} />
     </View>
   );
 };

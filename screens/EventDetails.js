@@ -15,11 +15,13 @@ import * as formatter from "../utils/formatter";
 import DateTimePicker from "../components/UI/DateTimePicker";
 import { Ionicons } from "@expo/vector-icons";
 import ActivityListItem from "../components/ActivityListItem";
+import CreateActivity from "./CreateActivity";
 
 const EventDetails = (props) => {
   const dispatch = useDispatch();
   const datePickerRef = useRef(null);
 
+  const [createActivity, setCreateActivity] = useState(false);
   const event = useSelector((state) => state.event.currentEvent);
   const [loading, setLoading] = useState(true);
   const [solidLoading, setSolidLoading] = useState(false);
@@ -141,6 +143,25 @@ const EventDetails = (props) => {
       clearInterval(interval);
     };
   }, [errorMessage]);
+
+  const handleCreateActivityCancel = useCallback(() => {
+    setCreateActivity(false);
+  }, [createActivity]);
+
+  const handleCreateActivitySave = useCallback(
+    async (activity) => {
+      try {
+        setCreateActivity(false);
+        setLoading(true);
+        await activityService.createActivity(event.id, activity);
+        await dispatch(eventActions.getCurrentEvent(event.id));
+      } catch (err) {
+        setErrorMessage({ line1: "Activity can not be created", line2: err });
+      }
+      setLoading(false);
+    },
+    [createActivity, activityService, errorMessage, loading]
+  );
 
   const editable = !!event && (Date.parse(event.startDate) > Date.now() || (!!event.endDate && Date.parse(event.endDate) > Date.now()));
   let activities = [];
@@ -286,7 +307,7 @@ const EventDetails = (props) => {
                   disabled={!editable}
                   title="Add Activity"
                   onPress={() => {
-                    alert("Add Activity");
+                    setCreateActivity(true);
                   }}
                   color={colors.green}
                 />
@@ -303,6 +324,9 @@ const EventDetails = (props) => {
           </View>
         </View>
       </ScrollView>
+      {createActivity && (
+        <CreateActivity event={event} show={createActivity} onCancel={handleCreateActivityCancel} onSave={handleCreateActivitySave} />
+      )}
       <LoadingControl active={loading} solid={solidLoading} />
     </View>
   );

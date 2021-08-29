@@ -35,3 +35,23 @@ export const updateActivity = async (eventId, activity) => {
 export const deleteActivity = async (eventId, activityId) => {
   await axios.delete(`${ACTIVITIES_URL(eventId)}/${activityId}`);
 };
+
+export const createActivity = async (eventId, activity) => {
+  let newActivity = {
+    title: activity.title,
+    description: activity.description,
+    dateTime: activity.dateTime,
+  };
+
+  if (activity.location) {
+    newActivity.location = activity.location;
+  }
+  console.log(newActivity);
+  const response = await axios.post(ACTIVITIES_URL(eventId), newActivity, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.data;
+};

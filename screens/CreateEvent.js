@@ -1,6 +1,5 @@
 import React, { useState, useReducer, useCallback } from "react";
 import { Modal, StyleSheet, Dimensions, View, Button, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import Card from "../components/UI/Card";
 import Text from "../components/UI/Text";
 import Input from "../components/UI/Input";
@@ -8,9 +7,6 @@ import Touchable from "../components/UI/Touchable";
 import { FORM_UPDATE, formReducer } from "../service/formReducer";
 import DateTimeInput from "../components/UI/DateTimeInput";
 import colors from "../constants/colors";
-import * as formatter from "../utils/formatter";
-import { Ionicons } from "@expo/vector-icons";
-import event from "../store/reducers/event";
 
 const initState = () => {
   const initialStartDate = new Date();
@@ -81,7 +77,7 @@ const CreateEvent = (props) => {
         <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={0}>
           <Card style={styles.card}>
             <View style={styles.contentView}>
-              <ScrollView contentContainerStyle={styles.inputContainer}>
+              <ScrollView>
                 <Input
                   id="title"
                   onSubmitEditing={() => {
@@ -205,14 +201,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
     padding: 20,
-    // alignItems: "center",
   },
   statusText: {
     textAlign: "center",
     fontSize: 20,
-  },
-  inputContainer: {
-    // flexGrow: 1,
   },
   buttonsContainer: {
     marginVertical: 10,

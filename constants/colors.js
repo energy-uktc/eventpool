@@ -8,4 +8,6 @@ export default {
   spearmint: "#98D7C2",
   text: "#33475b",
   error: "#cc0000",
+  transparent: "#98D7C288",
+  transparentGrey: "#F5FCFF88",
 };

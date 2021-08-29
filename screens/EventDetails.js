@@ -252,6 +252,7 @@ const EventDetails = (props) => {
                   );
                 })}
             </View>
+            <CardField label="Created By" text={event && event.createdBy && event.createdBy.userName ? event.createdBy.userName : ""} />
           </View>
 
           <View style={styles.section}>

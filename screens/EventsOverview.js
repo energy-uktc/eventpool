@@ -10,6 +10,7 @@ import * as eventActions from "../store/actions/event";
 import colors from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import ErrorView from "../components/ErrorView";
+import CreateEvent from "./CreateEvent";
 
 const EventsOverview = (props) => {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ const EventsOverview = (props) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [create, setCreate] = useState(false);
 
   const handleSelectEvent = useCallback(
     (eventId) => {
@@ -24,6 +26,24 @@ const EventsOverview = (props) => {
       props.navigation.navigate("EventDetails", { eventId: eventId });
     },
     [props.navigation, dispatch]
+  );
+
+  const handleCreateEventCancel = useCallback(() => {
+    setCreate(false);
+  }, [create]);
+
+  const handleCreateEventSave = useCallback(
+    async (event) => {
+      try {
+        setCreate(false);
+        setLoading(true);
+        await dispatch(eventActions.createEvent(event));
+      } catch (err) {
+        setErrorMessage(err);
+      }
+      setLoading(false);
+    },
+    [create, eventActions, errorMessage, loading]
   );
 
   const getEvents = useCallback(
@@ -78,6 +98,7 @@ const EventsOverview = (props) => {
     }
     return 1;
   });
+
   return (
     <SafeAreaView style={styles.container}>
       <LoadingControl active={loading} />
@@ -100,14 +121,15 @@ const EventsOverview = (props) => {
         style={styles.list}
         data={eventsArr}
         renderItem={({ item }) => <EventListItem event={item} onSelect={handleSelectEvent} />}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, i) => "" + i}
       />
       <FloatingPlusButton
         onPress={() => {
-          console.log("ADD");
+          setCreate(true);
         }}
         iconName="ios-add"
       />
+      {create && <CreateEvent show={create} onCancel={handleCreateEventCancel} onSave={handleCreateEventSave} />}
     </SafeAreaView>
   );
 };

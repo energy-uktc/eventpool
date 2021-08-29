@@ -1,15 +1,14 @@
-
 export const FORM_UPDATE = "UPDATE";
 
 export const formReducer = (state, action) => {
   if (action.type === FORM_UPDATE) {
     const updatedInputValues = {
       ...state.inputValues,
-      [action.input]: action.value
+      [action.input]: action.value,
     };
     const updatedInputValidities = {
       ...state.inputValidities,
-      [action.input]: action.isValid
+      [action.input]: action.isValid,
     };
     let updatedFormIsValid = true;
     for (const key in updatedInputValidities) {
@@ -19,7 +18,7 @@ export const formReducer = (state, action) => {
     return {
       inputValues: updatedInputValues,
       inputValidities: updatedInputValidities,
-      formIsValid: updatedFormIsValid
+      formIsValid: updatedFormIsValid,
     };
   } else {
     return state;

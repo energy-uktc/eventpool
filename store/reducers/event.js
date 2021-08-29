@@ -1,4 +1,4 @@
-import { GET_EVENTS, GET_ACTIVE_EVENTS, GET_CURRENT_EVENT, UPDATE_EVENT, CLEAR_CURRENT } from "../actions/event";
+import { GET_EVENTS, GET_ACTIVE_EVENTS, GET_CURRENT_EVENT, UPDATE_EVENT, CLEAR_CURRENT, CREATE_EVENT } from "../actions/event";
 const initialState = {
   events: {},
   currentEvent: {},
@@ -42,6 +42,15 @@ export default (state = initialState, action) => {
         },
         currentEvent: action.event,
       };
+    case CREATE_EVENT: {
+      return {
+        ...state,
+        events: {
+          ...state.events,
+          [action.event.id]: action.event,
+        },
+      };
+    }
     default:
       return state;
   }

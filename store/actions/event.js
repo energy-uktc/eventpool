@@ -4,6 +4,7 @@ export const GET_EVENTS = "GET_EVENTS";
 export const GET_ACTIVE_EVENTS = "GET_ACTIVE_EVENTS";
 export const GET_CURRENT_EVENT = "GET_CURRENT_EVENT";
 export const UPDATE_EVENT = "UPDATE_EVENT";
+export const CREATE_EVENT = "CREATE_EVENT";
 export const CLEAR_CURRENT = "CLEAR_CURRENT";
 
 export const getEvents = () => {
@@ -55,6 +56,16 @@ export const updateEvent = (eventToUpdate) => {
     const event = await eventService.updateEvent(eventToUpdate);
     dispatch({
       type: UPDATE_EVENT,
+      event: event,
+    });
+  };
+};
+
+export const createEvent = (eventToCreate) => {
+  return async (dispatch) => {
+    const event = await eventService.createEvent(eventToCreate);
+    dispatch({
+      type: CREATE_EVENT,
       event: event,
     });
   };

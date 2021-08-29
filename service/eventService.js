@@ -38,3 +38,22 @@ export const updateEvent = async (event) => {
 
   return response.data;
 };
+
+export const createEvent = async (event) => {
+  let createEvent = {
+    title: event.title,
+    description: event.description,
+    startDate: event.startDate,
+  };
+  if (event.endDate) {
+    createEvent.endDate = event.endDate;
+  }
+
+  const response = await axios.post(EVENTS_URL, createEvent, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.data;
+};

@@ -73,6 +73,16 @@ const NavContainer = (props) => {
           ResetPassword: "resetPassword",
         },
       },
+      MainNavigation: {
+        screens: {
+          EventsNavigator: {
+            initialRouteName: "Events",
+            screens: {
+              EventDetails: "eventDetails",
+            },
+          },
+        },
+      },
     },
   };
 

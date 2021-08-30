@@ -16,18 +16,26 @@ import * as formatter from "../utils/formatter";
 import DateTimePicker from "../components/UI/DateTimePicker";
 import { Ionicons } from "@expo/vector-icons";
 import ActivityListItem from "../components/ActivityListItem";
+import ShareEvent from "./ShareEvent";
 import CreateActivity from "./CreateActivity";
 
 const EventDetails = (props) => {
   const dispatch = useDispatch();
   const datePickerRef = useRef(null);
 
-  const [createActivity, setCreateActivity] = useState(false);
   const event = useSelector((state) => state.event.currentEvent);
+  const user = useSelector((state) => state.user);
+
+  const [share, setShare] = useState(false);
+  const [createActivity, setCreateActivity] = useState(false);
   const [loading, setLoading] = useState(true);
   const [solidLoading, setSolidLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState({ line1: "", line2: "" });
 
+  let guest = true;
+  if (event && event.attendees) {
+    guest = event.attendees.every((a) => a.email !== user.email);
+  }
   const onChangeDate = (fieldId, selectedDate) => {
     if (fieldId === "endDate") {
       if (selectedDate.getTime() < Date.parse(event.startDate)) {
@@ -64,6 +72,21 @@ const EventDetails = (props) => {
       try {
         setLoading(true);
         await eventService.leaveEvent(eventId);
+        await dispatch(eventActions.getEvents());
+        props.navigation.goBack();
+      } catch (err) {
+        setErrorMessage({ line1: "Something went wrong", line2: err });
+        setLoading(false);
+      }
+    },
+    [eventActions]
+  );
+
+  const joinEvent = useCallback(
+    async (eventId) => {
+      try {
+        setLoading(true);
+        await eventService.joinEvent(eventId);
         await dispatch(eventActions.getEvents());
         props.navigation.goBack();
       } catch (err) {
@@ -130,7 +153,7 @@ const EventDetails = (props) => {
   useEffect(() => {
     setSolidLoading(true);
     getEventDetails(props.route.params.eventId);
-  }, []);
+  }, [props.route.params.eventId]);
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -160,6 +183,15 @@ const EventDetails = (props) => {
     };
   }, [errorMessage]);
 
+  const handleShareEventCancel = useCallback(() => {
+    setShare(false);
+  }, [share]);
+
+  const handleShareEventSend = useCallback(async () => {
+    Alert.alert("Invitation send successfully");
+    setShare(false);
+  }, [share]);
+
   const handleCreateActivityCancel = useCallback(() => {
     setCreateActivity(false);
   }, [createActivity]);
@@ -179,7 +211,7 @@ const EventDetails = (props) => {
     [createActivity, activityService, errorMessage, loading]
   );
 
-  const editable = !!event && (Date.parse(event.startDate) > Date.now() || (!!event.endDate && Date.parse(event.endDate) > Date.now()));
+  const editable = !guest && !!event && (Date.parse(event.startDate) > Date.now() || (!!event.endDate && Date.parse(event.endDate) > Date.now()));
   let activities = [];
   if (event.activities) {
     activities = event.activities.sort((a, b) => {
@@ -200,11 +232,41 @@ const EventDetails = (props) => {
       <ErrorView active={!!errorMessage} text1={errorMessage.line1} text2={errorMessage.line2} />
       <ScrollView contentContainerStyle={styles.container}>
         <LinearGradient colors={[colors.white, colors.mint, colors.spearmint]} style={styles.headerView}>
-          <Text type="header" style={styles.headerText}>
-            {event.title}
-          </Text>
+          <View style={{ flex: 1 }}></View>
+          <View style={{ flex: 1 }}>
+            <Text type="header" style={styles.headerText}>
+              {event.title}
+            </Text>
+          </View>
+          <View style={styles.headerButtonContainer}>
+            <Touchable onPress={() => setShare(true)} disabled={!editable}>
+              <View style={styles.headerButton}>
+                <Ionicons name="share-social" color={colors.green} size={28} />
+                <Text style={{ color: colors.green, fontSize: 10 }}>Invite friends</Text>
+              </View>
+            </Touchable>
+            <Touchable>
+              <View style={styles.headerButton}>
+                <Ionicons name="location" color={colors.green} size={28} />
+                <Text style={{ color: colors.green, fontSize: 10 }}>Location</Text>
+              </View>
+            </Touchable>
+          </View>
         </LinearGradient>
         <View style={styles.contentView}>
+          {guest && (
+            <View style={styles.rowContainer}>
+              <View style={styles.rowButton}>
+                <Button
+                  title="Join"
+                  onPress={async () => {
+                    await joinEvent(event.id);
+                  }}
+                  color={colors.green}
+                />
+              </View>
+            </View>
+          )}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text type="header" style={styles.sectionHeaderText}>
@@ -255,7 +317,7 @@ const EventDetails = (props) => {
               />
             ) : (
               <View style={styles.rowContainer}>
-                <View style={styles.addEndDateButton}>
+                <View style={styles.rowButton}>
                   <Button
                     disabled={!editable}
                     title="Add End Time"
@@ -304,9 +366,10 @@ const EventDetails = (props) => {
                   <ActivityListItem
                     key={a.id}
                     activity={a}
+                    editable={editable}
                     onSelect={() => {
                       dispatch(clearCurrentActivity());
-                      props.navigation.navigate("ActivityDetails", { event: event, activityId: a.id });
+                      props.navigation.navigate("ActivityDetails", { event: event, activityId: a.id, editable: editable });
                     }}
                     onDelete={(eventId, activityId) => {
                       deleteActivity(eventId, activityId);
@@ -318,7 +381,7 @@ const EventDetails = (props) => {
               <Text>There is no activities in this event. If your event includes more that one activity you can manage them from here.</Text>
             )}
             <View style={styles.rowContainer}>
-              <View style={styles.addEndDateButton}>
+              <View style={styles.rowButton}>
                 <Button
                   disabled={!editable}
                   title="Add Activity"
@@ -338,9 +401,9 @@ const EventDetails = (props) => {
               </Text>
             </View>
           </View>
-          {!props.route.params.guest && (
+          {!guest && (
             <View style={styles.rowContainer}>
-              <View style={styles.addEndDateButton}>
+              <View style={styles.rowButton}>
                 <Button
                   title="Leave event"
                   onPress={() => {
@@ -372,6 +435,7 @@ const EventDetails = (props) => {
       {createActivity && (
         <CreateActivity event={event} show={createActivity} onCancel={handleCreateActivityCancel} onSave={handleCreateActivitySave} />
       )}
+      {share && <ShareEvent eventId={event.id} show={share} onCancel={handleShareEventCancel} onSend={handleShareEventSend} />}
       <LoadingControl active={loading} solid={solidLoading} />
     </View>
   );
@@ -386,15 +450,23 @@ const styles = StyleSheet.create({
   },
   headerView: {
     flex: 1,
-    justifyContent: "center",
+    height: Dimensions.get("screen").height / 4,
+    justifyContent: "space-evenly",
     alignItems: "center",
     elevation: 3,
   },
   headerText: {
-    paddingVertical: Dimensions.get("window").height / 10,
     fontSize: 22,
     textAlign: "center",
   },
+  headerButtonContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  headerButton: { alignItems: "center", marginHorizontal: 10 },
   contentView: {
     flex: 3,
     marginHorizontal: 20,
@@ -418,12 +490,9 @@ const styles = StyleSheet.create({
   rowContainer: {
     alignItems: "center",
   },
-  addEndDateButton: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 10,
+  rowButton: {
     width: Dimensions.get("screen").width / 3,
+    marginVertical: 10,
   },
 });
 

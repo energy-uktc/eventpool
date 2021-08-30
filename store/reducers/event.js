@@ -20,12 +20,16 @@ export default (state = initialState, action) => {
         },
       };
     case GET_CURRENT_EVENT:
-      return {
-        ...state,
-        events: {
+      let events = state.events;
+      if (events[action.event.id]) {
+        events = {
           ...state.events,
           [action.event.id]: action.event,
-        },
+        };
+      }
+      return {
+        ...state,
+        events: events,
         currentEvent: action.event,
       };
     case CLEAR_CURRENT:

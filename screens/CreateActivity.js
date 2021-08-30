@@ -36,11 +36,6 @@ const CreateActivity = (props) => {
   const handleDateInput = useCallback(
     (fieldId, date) => {
       const isValid = date.getTime() >= Date.parse(event.startDate) && (!event.endDate || date.getTime() <= Date.parse(event.endDate));
-      console.log(date >= event.startDate);
-      console.log(date <= event.endDate);
-      console.log(isValid);
-
-      console.log(isValid);
       inputChangeHandler(fieldId, date, isValid);
     },
     [formState.inputValues.dateTime]
@@ -51,7 +46,7 @@ const CreateActivity = (props) => {
   return (
     <Modal animationType="slide" transparent={true} visible={props.show}>
       <View style={styles.container}>
-        <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={0}>
+        <KeyboardAvoidingView style={styles.card} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={0}>
           <Card style={styles.card}>
             <View style={styles.contentView}>
               <ScrollView>
@@ -124,6 +119,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   card: {
+    width: "100%",
     maxHeight: (Dimensions.get("screen").height / 3) * 2,
     height: 320,
     padding: 0,

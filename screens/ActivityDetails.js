@@ -116,7 +116,7 @@ const ActivityDetails = (props) => {
     };
   }, [errorMessage]);
 
-  const editable = !!event && (Date.parse(event.startDate) > Date.now() || (!!event.endDate && Date.parse(event.endDate) > Date.now()));
+  const editable = props.route.params.editable;
 
   return (
     <View style={styles.containerView}>
@@ -163,6 +163,7 @@ const ActivityDetails = (props) => {
             />
             <DateTimePicker getRef={(ref) => (datePickerRef.current = ref.current)} onDateSelected={onChangeDate} />
             <Touchable
+              disabled={!editable}
               onPress={() =>
                 Alert.alert(
                   "Are you sure you want to delete this activity?",
@@ -179,7 +180,7 @@ const ActivityDetails = (props) => {
               }
             >
               <View style={styles.rowContainer}>
-                <Ionicons name="trash" size={32} color={colors.error} />
+                <Ionicons name="trash" size={32} color={editable ? colors.error : colors.grey} />
               </View>
             </Touchable>
           </View>

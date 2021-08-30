@@ -46,7 +46,6 @@ export const createActivity = async (eventId, activity) => {
   if (activity.location) {
     newActivity.location = activity.location;
   }
-  console.log(newActivity);
   const response = await axios.post(ACTIVITIES_URL(eventId), newActivity, {
     headers: {
       "Content-Type": "application/json",

@@ -7,7 +7,7 @@ import { View, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as formatter from "../utils/formatter";
 
-const ActivityListItem = ({ activity, onSelect, onDelete }) => {
+const ActivityListItem = ({ activity, onSelect, onDelete, editable }) => {
   return (
     <Card style={styles.container}>
       <Touchable onPress={() => onSelect(activity.id)}>
@@ -34,6 +34,7 @@ const ActivityListItem = ({ activity, onSelect, onDelete }) => {
                 </Touchable>
               )}
               <Touchable
+                disabled={!editable}
                 onPress={() =>
                   Alert.alert(
                     "Are you sure you want to delete this activity?",
@@ -50,7 +51,7 @@ const ActivityListItem = ({ activity, onSelect, onDelete }) => {
                 }
               >
                 <View style={styles.button}>
-                  <Ionicons name="trash" size={24} color={colors.error} />
+                  <Ionicons name="trash" size={24} color={editable ? colors.error : colors.grey} />
                 </View>
               </Touchable>
             </View>

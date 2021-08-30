@@ -67,3 +67,16 @@ export const joinEvent = async (eventId) => {
   const response = await axios.post(`${EVENTS_URL}/${eventId}/users`);
   return response;
 };
+
+export const sendInvitations = async (eventId, emails, mobileUrl) => {
+  const request = {
+    eventId: eventId,
+    emails: emails,
+  };
+  const response = await axios.post(`${EVENTS_URL}/${eventId}/users?invitation=true&mobileAppUrl=${mobileUrl}`, request, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response;
+};

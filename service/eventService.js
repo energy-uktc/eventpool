@@ -57,3 +57,13 @@ export const createEvent = async (event) => {
 
   return response.data;
 };
+
+export const leaveEvent = async (eventId) => {
+  const response = await axios.delete(`${EVENTS_URL}/${eventId}/users`);
+  return response;
+};
+
+export const joinEvent = async (eventId) => {
+  const response = await axios.post(`${EVENTS_URL}/${eventId}/users`);
+  return response;
+};

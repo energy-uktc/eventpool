@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from "react";
-import { StyleSheet, ScrollView, View, Dimensions, Button } from "react-native";
+import { StyleSheet, ScrollView, View, Dimensions, Button, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Text from "../components/UI/Text";
 import Touchable from "../components/UI/Touchable";
@@ -7,6 +7,7 @@ import LoadingControl from "../components/UI/LoadingControl";
 import CardField from "../components/UI/CardField";
 import ErrorView from "../components/ErrorView";
 import * as eventActions from "../store/actions/event";
+import * as eventService from "../service/eventService";
 import * as activityService from "../service/activityService";
 import { clearCurrentActivity } from "../store/actions/activity";
 import { useDispatch, useSelector } from "react-redux";
@@ -56,6 +57,21 @@ const EventDetails = (props) => {
       setSolidLoading(false);
     },
     [eventActions, errorMessage]
+  );
+
+  const leaveEvent = useCallback(
+    async (eventId) => {
+      try {
+        setLoading(true);
+        await eventService.leaveEvent(eventId);
+        await dispatch(eventActions.getEvents());
+        props.navigation.goBack();
+      } catch (err) {
+        setErrorMessage({ line1: "Something went wrong", line2: err });
+        setLoading(false);
+      }
+    },
+    [eventActions]
   );
 
   const deleteActivity = useCallback(
@@ -322,6 +338,35 @@ const EventDetails = (props) => {
               </Text>
             </View>
           </View>
+          {!props.route.params.guest && (
+            <View style={styles.rowContainer}>
+              <View style={styles.addEndDateButton}>
+                <Button
+                  title="Leave event"
+                  onPress={() => {
+                    Alert.alert(
+                      "Are you sure you want to leave this event?",
+                      "",
+                      [
+                        {
+                          text: "Cancel",
+                          style: "cancel",
+                        },
+                        {
+                          text: "OK",
+                          onPress: async () => {
+                            await leaveEvent(event.id);
+                          },
+                        },
+                      ],
+                      { cancelable: true }
+                    );
+                  }}
+                  color={colors.error}
+                />
+              </View>
+            </View>
+          )}
         </View>
       </ScrollView>
       {createActivity && (
@@ -363,15 +408,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderBottomWidth: 1,
     borderBottomColor: colors.grey,
-    // justifyContent: "center",
-    // alignItems: "center",
   },
   sectionHeader: {
     marginBottom: 5,
   },
   sectionHeaderText: {
     fontSize: 18,
-    // textDecorationLine: "underline",
   },
   rowContainer: {
     alignItems: "center",

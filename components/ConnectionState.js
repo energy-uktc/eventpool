@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Dimensions, Button } from "react-native";
-import Text from "../components/UI/Text";
-import Card from "../components/UI/Card";
+import Text from "./UI/Text";
+import Card from "./UI/Card";
 import colors from "../constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";

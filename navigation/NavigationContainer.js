@@ -3,7 +3,7 @@ import { enableScreens } from "react-native-screens";
 import { View, Modal } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import SplashScreen from "../screens/SplashScreen";
-import ConnectionState from "../screens/ConnectionState";
+import ConnectionState from "../components/ConnectionState";
 import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { getUser } from "../store/actions/user";

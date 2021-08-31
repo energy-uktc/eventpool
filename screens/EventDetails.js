@@ -18,6 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import ActivityListItem from "../components/ActivityListItem";
 import ShareEvent from "./ShareEvent";
 import CreateActivity from "./CreateActivity";
+import CreatePoll from "./CreatePoll";
 
 const EventDetails = (props) => {
   const dispatch = useDispatch();
@@ -28,6 +29,7 @@ const EventDetails = (props) => {
 
   const [share, setShare] = useState(false);
   const [createActivity, setCreateActivity] = useState(false);
+  const [createPoll, setCreatePoll] = useState(false);
   const [loading, setLoading] = useState(true);
   const [solidLoading, setSolidLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState({ line1: "", line2: "" });
@@ -192,6 +194,17 @@ const EventDetails = (props) => {
     setShare(false);
   }, [share]);
 
+  const handleCreatePollCancel = useCallback(() => {
+    setCreatePoll(false);
+  }, [createPoll]);
+
+  const handleCreatePollSave = useCallback(async () => {
+    Alert.alert("Poll was successfully created");
+    setCreatePoll(false);
+    setLoading(true);
+    await getEventDetails(event.id);
+  }, [createPoll, getEventDetails, loading]);
+
   const handleCreateActivityCancel = useCallback(() => {
     setCreateActivity(false);
   }, [createActivity]);
@@ -217,6 +230,21 @@ const EventDetails = (props) => {
     activities = event.activities.sort((a, b) => {
       const aDate = Date.parse(a.dateTime);
       const bDate = Date.parse(b.dateTime);
+      if (aDate === bDate) {
+        return 0;
+      }
+      if (aDate > bDate) {
+        return 1;
+      }
+      return -1;
+    });
+  }
+
+  let polls = [];
+  if (event.polls) {
+    polls = event.polls.sort((a, b) => {
+      const aDate = Date.parse(a.endTime);
+      const bDate = Date.parse(b.endTime);
       if (aDate === bDate) {
         return 0;
       }
@@ -400,6 +428,25 @@ const EventDetails = (props) => {
                 Polls:
               </Text>
             </View>
+            {polls.length > 0 ? (
+              polls.map((p) => {
+                return <Text key={p.id}>{p.question}</Text>;
+              })
+            ) : (
+              <Text>You have a question to your friends regarding the event organization? Creating a poll can help you.</Text>
+            )}
+            <View style={styles.rowContainer}>
+              <View style={styles.rowButton}>
+                <Button
+                  disabled={!editable}
+                  title="Create Poll"
+                  onPress={() => {
+                    setCreatePoll(true);
+                  }}
+                  color={colors.green}
+                />
+              </View>
+            </View>
           </View>
           {!guest && (
             <View style={styles.rowContainer}>
@@ -436,6 +483,7 @@ const EventDetails = (props) => {
         <CreateActivity event={event} show={createActivity} onCancel={handleCreateActivityCancel} onSave={handleCreateActivitySave} />
       )}
       {share && <ShareEvent eventId={event.id} show={share} onCancel={handleShareEventCancel} onSend={handleShareEventSend} />}
+      {createPoll && <CreatePoll event={event} show={createPoll} onCancel={handleCreatePollCancel} onSave={handleCreatePollSave} />}
       <LoadingControl active={loading} solid={solidLoading} />
     </View>
   );

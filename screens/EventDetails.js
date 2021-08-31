@@ -16,9 +16,9 @@ import * as formatter from "../utils/formatter";
 import DateTimePicker from "../components/UI/DateTimePicker";
 import { Ionicons } from "@expo/vector-icons";
 import ActivityListItem from "../components/ActivityListItem";
-import ShareEvent from "./ShareEvent";
-import CreateActivity from "./CreateActivity";
-import CreatePoll from "./CreatePoll";
+import ShareEvent from "../components/ShareEvent";
+import CreateActivity from "../components/CreateActivity";
+import CreatePoll from "../components/CreatePoll";
 
 const EventDetails = (props) => {
   const dispatch = useDispatch();

@@ -1,14 +1,14 @@
 import React, { useReducer, useCallback, useState } from "react";
 import { Modal, StyleSheet, Dimensions, View, Button, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
-import Card from "../components/UI/Card";
-import Touchable from "../components/UI/Touchable";
-import Input from "../components/UI/Input";
-import Picker from "../components/UI/Picker";
-import LoadingControl from "../components/UI/LoadingControl";
-import ErrorView from "../components/ErrorView";
+import Card from "./UI/Card";
+import Touchable from "./UI/Touchable";
+import Input from "./UI/Input";
+import Picker from "./UI/Picker";
+import LoadingControl from "./UI/LoadingControl";
+import ErrorView from "./ErrorView";
 import { Ionicons } from "@expo/vector-icons";
 import { FORM_UPDATE, REMOVE_KEY, formReducer } from "../service/formReducer";
-import DateTimeInput from "../components/UI/DateTimeInput";
+import DateTimeInput from "./UI/DateTimeInput";
 import * as pollService from "../service/pollService";
 import colors from "../constants/colors";
 

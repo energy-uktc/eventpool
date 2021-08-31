@@ -10,7 +10,7 @@ import * as eventActions from "../store/actions/event";
 import colors from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import ErrorView from "../components/ErrorView";
-import CreateEvent from "./CreateEvent";
+import CreateEvent from "../components/CreateEvent";
 
 const EventsOverview = (props) => {
   const dispatch = useDispatch();

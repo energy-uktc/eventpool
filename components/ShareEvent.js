@@ -1,11 +1,11 @@
 import React, { useState, useReducer, useCallback, useRef } from "react";
 import { Modal, StyleSheet, Dimensions, View, Button, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
-import Card from "../components/UI/Card";
-import Text from "../components/UI/Text";
-import Input from "../components/UI/Input";
-import Touchable from "../components/UI/Touchable";
-import LoadingControl from "../components/UI/LoadingControl";
-import ErrorView from "../components/ErrorView";
+import Card from "./UI/Card";
+import Text from "./UI/Text";
+import Input from "./UI/Input";
+import Touchable from "./UI/Touchable";
+import LoadingControl from "./UI/LoadingControl";
+import ErrorView from "./ErrorView";
 import { FORM_UPDATE, formReducer } from "../service/formReducer";
 import colors from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";

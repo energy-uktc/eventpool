@@ -1,9 +1,9 @@
 import React, { useReducer, useCallback } from "react";
 import { Modal, StyleSheet, Dimensions, View, Button, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
-import Card from "../components/UI/Card";
-import Input from "../components/UI/Input";
+import Card from "./UI/Card";
+import Input from "./UI/Input";
 import { FORM_UPDATE, formReducer } from "../service/formReducer";
-import DateTimeInput from "../components/UI/DateTimeInput";
+import DateTimeInput from "./UI/DateTimeInput";
 import colors from "../constants/colors";
 
 const CreateActivity = (props) => {

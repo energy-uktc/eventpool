@@ -1,4 +1,5 @@
 import { GET_EVENTS, GET_ACTIVE_EVENTS, GET_CURRENT_EVENT, UPDATE_EVENT, CLEAR_CURRENT, CREATE_EVENT } from "../actions/event";
+import { LOGOUT } from "../actions/auth";
 const initialState = {
   events: {},
   currentEvent: {},
@@ -53,6 +54,11 @@ export default (state = initialState, action) => {
           ...state.events,
           [action.event.id]: action.event,
         },
+      };
+    }
+    case LOGOUT: {
+      return {
+        ...initialState,
       };
     }
     default:

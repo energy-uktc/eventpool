@@ -19,3 +19,18 @@ export const createPoll = async (eventId, poll) => {
 
   return response;
 };
+
+export const deletePoll = async (eventId, pollId) => {
+  const response = await axios.delete(`${POLLS_URL(eventId)}/${pollId}`);
+  return response;
+};
+
+export const vote = async (eventId, pollId, optionId) => {
+  const response = await axios.post(`${POLLS_URL(eventId)}/${pollId}/options/${optionId}/vote`);
+  return response;
+};
+
+export const removeVote = async (eventId, pollId, optionId) => {
+  const response = await axios.delete(`${POLLS_URL(eventId)}/${pollId}/options/${optionId}/vote`);
+  return response;
+};

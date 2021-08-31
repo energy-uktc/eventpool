@@ -18,6 +18,7 @@ const EventsOverview = (props) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [solid, setSolid] = useState(true);
   const [create, setCreate] = useState(false);
 
   const handleSelectEvent = useCallback(
@@ -61,6 +62,7 @@ const EventsOverview = (props) => {
         setErrorMessage(err);
       }
       setLoading(false);
+      setSolid(false);
     },
     [eventActions, errorMessage]
   );
@@ -101,7 +103,7 @@ const EventsOverview = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LoadingControl active={loading} />
+      <LoadingControl active={loading} solid={solid} />
       <ErrorView active={!!errorMessage} text1="We can't load the events right now." text2={errorMessage} />
       <FlatList
         refreshControl={

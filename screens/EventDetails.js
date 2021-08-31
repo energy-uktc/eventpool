@@ -16,6 +16,7 @@ import * as formatter from "../utils/formatter";
 import DateTimePicker from "../components/UI/DateTimePicker";
 import { Ionicons } from "@expo/vector-icons";
 import ActivityListItem from "../components/ActivityListItem";
+import PollListItem from "../components/PollListItem";
 import ShareEvent from "../components/ShareEvent";
 import CreateActivity from "../components/CreateActivity";
 import CreatePoll from "../components/CreatePoll";
@@ -430,7 +431,18 @@ const EventDetails = (props) => {
             </View>
             {polls.length > 0 ? (
               polls.map((p) => {
-                return <Text key={p.id}>{p.question}</Text>;
+                return (
+                  <PollListItem
+                    key={p.id}
+                    poll={p}
+                    editable={editable}
+                    onAfterDelete={async () => {
+                      setLoading(true);
+                      await getEventDetails(event.id);
+                    }}
+                    onAfterVote={async () => await getEventDetails(event.id)}
+                  />
+                );
               })
             ) : (
               <Text>You have a question to your friends regarding the event organization? Creating a poll can help you.</Text>

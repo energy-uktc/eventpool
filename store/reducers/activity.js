@@ -1,4 +1,5 @@
 import { GET_CURRENT_ACTIVITY, UPDATE_ACTIVITY, CLEAR_CURRENT_ACTIVITY } from "../actions/activity";
+import { LOGOUT } from "../actions/auth";
 const initialState = {
   currentActivity: {},
 };
@@ -20,6 +21,11 @@ export default (state = initialState, action) => {
         ...state,
         currentActivity: action.activity,
       };
+    case LOGOUT: {
+      return {
+        ...initialState,
+      };
+    }
     default:
       return state;
   }
